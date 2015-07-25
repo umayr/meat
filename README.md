@@ -23,7 +23,6 @@ After installing cocoa pods, you can install dependencies by executing:
 ```
 Then open project in Xcode by clicking `meat.xcworkspace`.
 
-### Screenshots:
+### Screencast:
 
-![Basic](https://raw.githubusercontent.com/hungrilla/media/master/screenshots/meat/initial.png)
-![Search Feature](https://raw.githubusercontent.com/hungrilla/media/master/screenshots/meat/searching.png)
+![Basic](http://i.imgur.com/tFIsr4b.gif)
