@@ -9,32 +9,30 @@
 import UIKit
 import Alamofire;
 
-class ViewController: UIViewController , UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate{
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
-    @IBOutlet weak var textbox: UITextField!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UISearchBar!
     
     // Cell Identifier
     let cellIdentifier = "TableCell"
     
-    // Keeping track if a search is active.
-    var searchActive: Bool = false
-    
     // Empty `Restaurant` Array
     var list:[Restaurant] = []
     
-    // Empty filtered `Restaurant` Array
-    var filtered:[Restaurant] = []
+    weak var selectedRetaurant: Restaurant!
+    var menuList:[Menu] = []
     
     // `viewDidLoad` function override.
     // Set `tableView` height. Registers its class.
     // Initiates a request to fetch restaurants from API.
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = Utils.UIColorFromRGB(0xC1272D)
+        self.view.tintColor = Utils.UIColorFromRGB(0xFFFFFF)
+        
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.searchBar.delegate = self
+        
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.registerClass(TableCell.self, forCellReuseIdentifier: cellIdentifier)
         self.getTopRestaurants()
@@ -59,30 +57,31 @@ class ViewController: UIViewController , UITableViewDelegate, UITableViewDataSou
         });
     }
     
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+        if (segue.identifier == "menu_details_segue") {
+            var menuController = segue.destinationViewController as! MenuViewController;
+            menuController.restaurant = self.selectedRetaurant
+            menuController.list = self.menuList
+        }
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.navigationItem.title = "Hungrilla"
+    }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if self.searchActive {
-            return self.filtered.count
-        }
         return self.list.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as! UITableViewCell
-        let item: Restaurant;
-        
-        if self.searchActive {
-            item = self.filtered[indexPath.row] as Restaurant
-        }
-        else {
-            item = self.list[indexPath.row] as Restaurant
-        }
-        
+        let item: Restaurant = self.list[indexPath.row] as Restaurant
         cell.textLabel?.text = item.getName()
         cell.detailTextLabel?.text = item.getType()
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
@@ -90,35 +89,22 @@ class ViewController: UIViewController , UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        println("You selected cell #\(indexPath.row)!")
-    }
-    
-    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
-        searchActive = true
-    }
-    
-    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
-        searchActive = false
-    }
-    
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        searchActive = false
-    }
-    
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        searchActive = false
-    }
-    
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        let id = self.list[indexPath.row].getId();
         
-        filtered = self.filterRestaurants(searchText)
-        
-        if(filtered.count == 0){
-            searchActive = false;
-        } else {
-            searchActive = true;
-        }
-        self.tableView.reloadData()
+        selectedRetaurant = self.list[indexPath.row]
+
+        Request.getMenus(id, handler: {
+            (menus, error) in
+            if error == nil{
+                if menus.count > 0 {
+                    self.menuList = menus
+                    self.performSegueWithIdentifier("menu_details_segue", sender: self)
+                }
+                else {
+                    self.presentViewController(Alerts.somethingBroke(), animated: true, completion: nil)
+                }
+            }
+        })
     }
 
 }
