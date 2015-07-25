@@ -20,4 +20,15 @@ public class Parser {
         
         return restaurants;
     }
+    
+    public static func parseMenus(raw: AnyObject?) -> [Menu]{
+        var _list = (raw as! NSArray) as Array;
+        var menus: [Menu] = []
+        
+        for _item in _list{
+            menus.append(Menu(raw: _item));
+        }
+        
+        return menus;
+    }
 }

@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 public class Request{
-    private static let BASE_URL = "https://hungrilla.herokuapp.com/api/v1"
+    private static let BASE_URL = "http://localhost:3000/api/v1"
     
     public class func get(endpoint: String, parameters: [String:AnyObject]?, handler: (response : AnyObject?, error: NSError?) -> Void) {
         Alamofire
@@ -29,11 +29,21 @@ public class Request{
     public static func getRestaurants(handler: (restaurants: [Restaurant], error: NSError?)->Void){
         let endpoint = "/restaurant?count=40&sort=-rating";
 
-        
         self.get(endpoint, parameters: nil, handler: {
         (JSON, error) in
             var response: [Restaurant] = Parser.parseRestaurants(JSON)
             handler(restaurants: response, error: error)
         });
+    }
+    
+    public static func getMenus(id: String, handler: (menus : [Menu], error: NSError?) -> Void){
+        if !id.isEmpty {
+            let endpoint = "/menu?restaurantId=\(id)"
+            self.get(endpoint, parameters: nil, handler: {
+                (JSON, error) in
+                var response: [Menu] = Parser.parseMenus(JSON)
+                handler(menus: response, error: error)
+            });
+        }
     }
 }
