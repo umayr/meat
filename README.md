@@ -25,4 +25,4 @@ Then open project in Xcode by clicking `meat.xcworkspace`.
 
 ### Screencast:
 
-![Basic](http://i.imgur.com/tFIsr4b.gif)
+![Basic](http://i.imgur.com/zXtvK1w.gif)
