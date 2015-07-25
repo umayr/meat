@@ -54,7 +54,7 @@ class ViewController: UIViewController , UITableViewDelegate, UITableViewDataSou
     func filterRestaurants(searchText: String) -> [Restaurant]{
         return self.list.filter({
             (restaurant: Restaurant) -> Bool in
-            let match = restaurant.getName().rangeOfString(searchText);
+            let match = restaurant.getName().lowercaseString.rangeOfString(searchText.lowercaseString);
             return match != nil
         });
     }
