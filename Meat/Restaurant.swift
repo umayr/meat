@@ -30,4 +30,12 @@ public class Restaurant {
     func getType() -> String{
         return self.type
     }
+    
+    func getId() -> String{
+        return self.uuid
+    }
+    
+    func getRating() -> Int{
+        return self.rating
+    }
 }
